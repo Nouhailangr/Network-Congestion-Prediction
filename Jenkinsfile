@@ -28,7 +28,7 @@ pipeline {
             steps {
                 script {
                     // Run the Docker container
-                    sh 'docker run -d -p 9090:5000 $DOCKER_IMAGE:$DOCKER_TAG'
+                    sh 'docker run -d -p 9090:5001 $DOCKER_IMAGE:$DOCKER_TAG'
                 }
             }
         }
