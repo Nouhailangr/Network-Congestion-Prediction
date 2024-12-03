@@ -5,7 +5,7 @@ pipeline {
         DOCKER_IMAGE = 'network-congestion-prediction'
         DOCKER_TAG = 'latest'
         DOCKER_REGISTRY = 'docker.io' // Adjust if needed
-        SONARQUBE_SCANNER = tool name: 'SonarQube', type: 'SonarQubeScanner'
+        SONARQUBE = 'SonarQube' // The name you gave your SonarQube server in Jenkins configuration
     }
 
     stages {
