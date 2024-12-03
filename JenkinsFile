@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'Network-Congestion-Prediction'
+        DOCKER_IMAGE = 'network-congestion-prediction'
         DOCKER_TAG = 'latest'
         DOCKER_REGISTRY = 'docker.io' // Adjust if needed
     }
@@ -11,7 +11,7 @@ pipeline {
         stage('Clone Repository') {
             steps {
                 // Clone your Git repository containing the Flask app code
-                git 'https://github.com/Nouhailangr/Network-Congestion-Prediction' // Replace with your GitHub URL
+                git 'https://github.com/Nouhailangr/network-congestion-prediction' // Replace with your GitHub URL
             }
         }
         
@@ -36,14 +36,14 @@ pipeline {
         stage('Clean Up') {
             steps {
                 script {
-                    def containerId = sh(script: "docker ps -q --filter name=Network-Congestion-Prediction", returnStdout: true).trim()
+                    def containerId = sh(script: "docker ps -q --filter name=network-congestion-prediction", returnStdout: true).trim()
                     if (containerId) {
                         sh "docker stop ${containerId}"
                         sh "docker rm ${containerId}"
                     } else {
                         echo "No running containers to clean up."
                     }
-                    sh 'docker rmi -f Network-Congestion-Prediction:latest || true'
+                    sh 'docker rmi -f network-ongestion-prediction:latest || true'
                 }
             }
         }
