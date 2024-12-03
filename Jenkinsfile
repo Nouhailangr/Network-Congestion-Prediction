@@ -33,6 +33,24 @@ pipeline {
             }
         }
 
+        stage('Install Test Dependencies') {
+            steps {
+                script {
+                    // Install Python dependencies for testing
+                    sh 'docker run --rm $DOCKER_IMAGE:$DOCKER_TAG pip install pytest flask'
+                }
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                script {
+                    // Run the tests using pytest
+                    sh 'docker run --rm $DOCKER_IMAGE:$DOCKER_TAG pytest tests/ --maxfail=1 --disable-warnings -q'  // Assuming tests are in the 'tests' folder
+                }
+            }
+        }
+
         stage('Clean Up') {
             steps {
                 script {
