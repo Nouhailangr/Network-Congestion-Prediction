@@ -5,7 +5,7 @@ pipeline {
         DOCKER_IMAGE = 'network-congestion-prediction'
         DOCKER_TAG = 'latest'
         DOCKER_REGISTRY = 'docker.io' // Adjust if needed
-        SONARQUBE_SCANNER = tool name: 'SonarQubeScanner', type: 'SonarQubeScanner'
+        SONARQUBE_SCANNER = tool name: 'SonarQube', type: 'SonarQubeScanner'
     }
 
     stages {
