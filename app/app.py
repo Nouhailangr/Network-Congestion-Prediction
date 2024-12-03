@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 
 
 app = Flask(__name__)
+app.config['TESTING'] = True  # This enables the testing configuration
 
 # Placeholder for your data (replace with your actual data loading logic)
 supervised_data = pd.read_excel('data/supervised_data.xlsx', index_col=0, parse_dates=True)  # Update as needed
