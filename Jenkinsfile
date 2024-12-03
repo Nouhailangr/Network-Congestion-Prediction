@@ -11,7 +11,7 @@ pipeline {
         stage('Clone Repository') {
             steps {
                 // Clone your Git repository containing the Flask app code
-                git 'https://github.com/Nouhailangr/network-congestion-prediction' // Replace with your GitHub URL
+                git branch: 'main', 'https://github.com/Nouhailangr/network-congestion-prediction' // Replace with your GitHub URL
             }
         }
         
