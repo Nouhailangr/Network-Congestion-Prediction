@@ -5,6 +5,7 @@ pipeline {
         DOCKER_IMAGE = 'network-congestion-prediction'
         DOCKER_TAG = 'latest'
         DOCKER_REGISTRY = 'docker.io' // Adjust if needed
+        SONARQUBE_SCANNER = tool name: 'SonarQube Scanner', type: 'SonarQubeScanner'
     }
 
     stages {
@@ -38,6 +39,24 @@ pipeline {
                 script {
                     // Install Python dependencies for testing
                     sh 'docker run --rm $DOCKER_IMAGE:$DOCKER_TAG pip install pytest flask'
+                }
+            }
+        }
+
+        stage('Run SonarQube Analysis') {
+            steps {
+                script {
+                    // Run SonarQube analysis inside Docker container
+                    sh '''
+                        docker run --rm \
+                            -e SONARQUBE_URL=http://localhost:9000 \
+                            -e SONARQUBE_TOKEN=$SONARQUBE_TOKEN \
+                            -v $(pwd):/usr/src/app \
+                            $DOCKER_IMAGE:$DOCKER_TAG \
+                            $SONARQUBE_SCANNER -Dsonar.projectKey=network-congestion-prediction \
+                            -Dsonar.sources=src \
+                            -Dsonar.host.url=$SONARQUBE_URL
+                    '''
                 }
             }
         }
