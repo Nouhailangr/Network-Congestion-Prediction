@@ -1,8 +1,12 @@
 # Use the official Python image from the Docker Hub
 FROM python:3.9-slim
 
-# Install dependencies and OpenJDK 11
+# Add repository and install OpenJDK 11
 RUN apt-get update && \
+    apt-get install -y \
+    software-properties-common && \
+    add-apt-repository ppa:openjdk-r/ppa && \
+    apt-get update && \
     apt-get install -y \
     openjdk-11-jdk \
     build-essential \
