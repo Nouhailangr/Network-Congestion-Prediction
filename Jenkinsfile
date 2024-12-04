@@ -47,11 +47,20 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-            // Run the tests inside the Docker container and mount test results to Jenkins workspace
-                    sh 'docker run --rm -e PYTHONPATH=/app -v "$WORKSPACE/Network Congestion/test-results:/test-results" network-congestion-prediction:latest sh -c "mkdir -p /test-results && pytest tests/ --maxfail=1 --disable-warnings -q --junitxml=/test-results/test-results.xml"'
+            // Create the test-results directory if it doesn't exist
+                    sh 'mkdir -p "$WORKSPACE/Network Congestion/test-results"'
+
+            // Run the tests inside the Docker container and mount the test results folder
+                    sh '''
+                docker run --rm \
+                -e PYTHONPATH=/app \
+                -v "$WORKSPACE/Network Congestion/test-results:/test-results" \
+                network-congestion-prediction:latest \
+                sh -c "mkdir -p /test-results && pytest tests/ --maxfail=1 --disable-warnings -q --junitxml=/test-results/test-results.xml"
+            '''
 
             // Archive the generated test results
-                    junit '**/test-results/test-results.xml'
+                    junit "$WORKSPACE/Network Congestion/test-results/test-results.xml"
                 }
             }
         }
