@@ -21,6 +21,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install pandas openpyxl tensorflow
 RUN pip install keras==3.4.1 tensorflow==2.17.0
 
+# Install dependencies
+RUN pip install pytest flask
+
+# Create results directory
+RUN chmod 777 /test-results
 
 
 # Copy the rest of the application code into the container
