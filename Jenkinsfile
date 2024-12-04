@@ -48,7 +48,7 @@ pipeline {
             steps {
                 script {
                     // Run the tests using pytest
-                    sh 'docker run --rm -e PYTHONPATH=/app $DOCKER_IMAGE:$DOCKER_TAG pytest tests/ --maxfail=1 --disable-warnings -q --junitxml=/test-results/test-results.xml'  // Assuming tests are in the 'tests' folder
+                    sh 'docker run --rm -e PYTHONPATH=/app $DOCKER_IMAGE:$DOCKER_TAG sh -c "mkdir -p /test-results && pytest tests/ --maxfail=1 --disable-warnings -q --junitxml=/test-results/test-results.xml"'
 
                     // Archive the generated test results
                     junit '**/test-results/test-results.xml'  // Adjust path if necessary
