@@ -48,7 +48,13 @@ pipeline {
             steps {
                 script {
                     // Run the tests using pytest
-                    sh """docker run --rm -e PYTHONPATH=/app -v "$WORKSPACE/test-results:/test-results" "$DOCKER_IMAGE:$DOCKER_TAG" pytest tests/ --maxfail=1 --disable-warnings -q --junitxml=/test-results/test-results.xml"""
+                    sh '''
+    docker run --rm \
+    -e PYTHONPATH=/app \
+    -v "$WORKSPACE/test-results:/test-results" \
+    network-congestion-prediction:latest \
+    sh -c "mkdir -p /test-results && pytest tests/ --maxfail=1 --disable-warnings -q --junitxml=/test-results/test-results.xml && ls -l /test-results"
+'''
                 }
             }
         }
