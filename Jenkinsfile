@@ -45,25 +45,33 @@ pipeline {
         }
 
         stage('Run Tests') {
-            steps {
-                script {
+    steps {
+        script {
             // Create the test-results directory if it doesn't exist
-                    sh 'mkdir -p "$WORKSPACE/test-results"'
+            sh 'mkdir -p "$WORKSPACE/test-results"'
 
             // Run the tests inside the Docker container and mount the test results folder
-                    sh '''
+            sh '''
                 docker run --rm \
                 -e PYTHONPATH=/app \
                 -v "$WORKSPACE/test-results:/test-results" \
                 network-congestion-prediction:latest \
-                sh -c "mkdir -p /test-results && pytest tests/ --maxfail=1 --disable-warnings -q --junitxml=/test-results/test-results.xml"
+                sh -c "
+                    # Ensure the test-results folder is created inside the container
+                    mkdir -p /test-results && \
+                    # Run pytest and generate the XML report
+                    pytest tests/ --maxfail=1 --disable-warnings -q --junitxml=/test-results/test-results.xml && \
+                    # List the contents of /test-results to confirm the file is created
+                    ls -l /test-results
+                "
             '''
 
             // Archive the generated test results
-                    junit "$WORKSPACE/Network Congestion/test-results/test-results.xml"
-                }
-            }
+            junit "$WORKSPACE/test-results/test-results.xml"
         }
+    }
+}
+
 
 
         stage('Clean Up') {
