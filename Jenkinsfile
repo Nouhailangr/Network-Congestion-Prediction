@@ -48,7 +48,7 @@ pipeline {
 
                     // Run the tests and generate XML report
                     sh '''
-                        docker run --rm \
+                        docker run --rm --user root \
                         -e PYTHONPATH=/app \
                         -v "$WORKSPACE/test-results:/test-results" \
                         "$DOCKER_IMAGE:$DOCKER_TAG" \
