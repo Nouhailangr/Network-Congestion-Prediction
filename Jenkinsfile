@@ -53,7 +53,7 @@ pipeline {
                     withSonarQubeEnv('SonarQube') { // Replace 'SonarQube' with your SonarQube server name
                         sh '''
                             docker run --rm \
-                                -v $(pwd):/usr/src/app \
+                                -v "$(pwd)":/usr/src/app \
                                 $DOCKER_IMAGE:$DOCKER_TAG \
                                 sonar-scanner \
                                 -Dsonar.projectKey=network-congestion-prediction \
