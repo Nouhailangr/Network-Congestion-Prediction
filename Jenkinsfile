@@ -48,7 +48,7 @@ pipeline {
             steps {
                 script {
                     // Run the tests using pytest
-                    sh 'docker run --rm -e PYTHONPATH=/app $DOCKER_IMAGE:$DOCKER_TAG pytest tests/ --maxfail=1 --disable-warnings -q'  // Assuming tests are in the 'tests' folder
+                    sh 'docker run --rm -e PYTHONPATH=/app -v $WORKSPACE/test-results:/test-results $DOCKER_IMAGE:$DOCKER_TAG pytest tests/ --maxfail=1 --disable-warnings -q --junitxml=/test-results/test-results.xml'
                 }
             }
         }
