@@ -45,34 +45,13 @@ pipeline {
         }
 
         stage('Run Tests') {
-    steps {
-        script {
-            // Create the test-results directory if it doesn't exist
-            sh 'mkdir -p "$WORKSPACE/test-results"'
-
-            // Run the tests inside the Docker container and mount the test results folder
-            sh '''
-                docker run --rm \
-                -e PYTHONPATH=/app \
-                -v "$WORKSPACE/test-results:/test-results" \
-                network-congestion-prediction:latest \
-                sh -c "
-                    # Ensure the test-results folder is created inside the container
-                    mkdir -p /test-results && \
-                    # Run pytest and generate the XML report
-                    pytest tests/ --maxfail=1 --disable-warnings -q --junitxml=/test-results/test-results.xml && \
-                    # List the contents of /test-results to confirm the file is created
-                    ls -l /test-results
-                "
-            '''
-
-            // Archive the generated test results
-            junit "$WORKSPACE/test-results/test-results.xml"
+            steps {
+                script {
+                    // Run the tests using pytest
+                    sh 'docker run --rm -e PYTHONPATH=/app $DOCKER_IMAGE:$DOCKER_TAG pytest tests/ --maxfail=1 --disable-warnings -q'  // Assuming tests are in the 'tests' folder
+                }
+            }
         }
-    }
-}
-
-
 
         stage('Clean Up') {
             steps {
