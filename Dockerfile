@@ -1,28 +1,13 @@
 # Use the official Python image from the Docker Hub
 FROM python:3.9-slim
 
-# Add repository and install OpenJDK 11
+# Install system dependencies for building Python packages
 RUN apt-get update && \
     apt-get install -y \
-    software-properties-common && \
-    add-apt-repository ppa:openjdk-r/ppa && \
-    apt-get update && \
-    apt-get install -y \
-    openjdk-11-jdk \
     build-essential \
     pkg-config \
     libhdf5-dev \
-    wget \
-    unzip \
-    curl && \
-    rm -rf /var/lib/apt/lists/*
-
-# Install sonar-scanner
-RUN wget https://github.com/SonarSource/sonar-scanner-cli/releases/download/4.6.2.2472/sonar-scanner-4.6.2.2472-linux.zip && \
-    unzip sonar-scanner-4.6.2.2472-linux.zip && \
-    rm sonar-scanner-4.6.2.2472-linux.zip && \
-    mv sonar-scanner-4.6.2.2472 /opt/sonar-scanner && \
-    ln -s /opt/sonar-scanner/bin/sonar-scanner /usr/local/bin/sonar-scanner
+    && rm -rf /var/lib/apt/lists/*
 
 # Set the working directory in the container
 WORKDIR /app
@@ -35,6 +20,8 @@ RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install pandas openpyxl tensorflow
 RUN pip install keras==3.4.1 tensorflow==2.17.0
+
+
 
 # Copy the rest of the application code into the container
 COPY . .
