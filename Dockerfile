@@ -9,8 +9,13 @@ RUN apt-get update && \
     libhdf5-dev \
     wget \
     unzip \
-    openjdk-11-jre \
+    curl \
     && rm -rf /var/lib/apt/lists/*
+
+# Install OpenJDK 11
+RUN curl -sL https://packages.adoptopenjdk.net/installers/openjdk11/11.0.10.9.1/ubuntu/bionic/amd64/openjdk-11-jdk_11.0.10+9_amd64.deb -o openjdk-11-jdk.deb && \
+    dpkg -i openjdk-11-jdk.deb && \
+    rm openjdk-11-jdk.deb
 
 # Install sonar-scanner
 RUN wget https://github.com/SonarSource/sonar-scanner-cli/releases/download/4.6.2.2472/sonar-scanner-4.6.2.2472-linux.zip && \
