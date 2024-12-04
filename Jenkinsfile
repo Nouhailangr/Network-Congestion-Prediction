@@ -5,6 +5,8 @@ pipeline {
         DOCKER_IMAGE = 'network-congestion-prediction'
         DOCKER_TAG = 'latest'
         DOCKER_REGISTRY = 'docker.io' // Adjust if needed
+        GMAIL_USER = 'nouhailangr275128@gmail.com'  // Replace with your Gmail address
+        GMAIL_PASSWORD = 'elhf fkrg xrfb mknn'  // Replace with your generated app password
     }
 
     stages {
@@ -71,6 +73,21 @@ pipeline {
         always {
             // Optionally clean up Docker images
             sh 'docker rmi $DOCKER_IMAGE:$DOCKER_TAG || true'
+        }
+        success {
+            mail to: 'nouhailangr275128@gmail.com',  // Replace with your recipient's email address
+                subject: "Jenkins Build Success - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: "The build for ${env.JOB_NAME} #${env.BUILD_NUMBER} was successful. Check the build logs for more details.\n\nBuild URL: ${env.BUILD_URL}",
+                from: "$GMAIL_USER",
+                mimeType: 'text/plain'
+        }
+
+        failure {
+            mail to: 'nouhailangr275128@gmail.com',  // Replace with your recipient's email address
+                subject: "Jenkins Build Failed - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: "The build for ${env.JOB_NAME} #${env.BUILD_NUMBER} has failed. Please check the build logs for errors.\n\nBuild URL: ${env.BUILD_URL}",
+                from: "$GMAIL_USER",
+                mimeType: 'text/plain'
         }
     }
 }
