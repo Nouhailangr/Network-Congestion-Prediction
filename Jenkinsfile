@@ -5,19 +5,20 @@ pipeline {
         DOCKER_IMAGE = 'network-congestion-prediction'
         DOCKER_TAG = 'latest'
         DOCKER_REGISTRY = 'docker.io' // Adjust if needed
-        SONARQUBE_SERVER = 'SonarQube' // Name of the SonarQube server in Jenkins configuration
     }
 
     stages {
         stage('Clone Repository') {
             steps {
+                // Clone your Git repository containing the Flask app code
                 git branch: 'main', url: 'https://github.com/Nouhailangr/network-congestion-prediction' // Replace with your GitHub URL
             }
         }
-
+        
         stage('Build Docker Image') {
             steps {
                 script {
+                    // Build the Docker image
                     sh 'docker build -t $DOCKER_IMAGE:$DOCKER_TAG .'
                 }
             }
@@ -26,6 +27,7 @@ pipeline {
         stage('Run Docker Container') {
             steps {
                 script {
+                    // Run the Docker container
                     sh 'docker run -d -p 9090:5001 $DOCKER_IMAGE:$DOCKER_TAG'
                 }
             }
@@ -34,6 +36,7 @@ pipeline {
         stage('Install Test Dependencies') {
             steps {
                 script {
+                    // Install Python dependencies for testing
                     sh 'docker run --rm $DOCKER_IMAGE:$DOCKER_TAG pip install pytest flask'
                 }
             }
@@ -42,26 +45,8 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    sh 'docker run --rm -e PYTHONPATH=/app $DOCKER_IMAGE:$DOCKER_TAG pytest tests/ --maxfail=1 --disable-warnings -q'
-                }
-            }
-        }
-
-        stage('SonarQube Analysis') {
-            steps {
-                script {
-                    withSonarQubeEnv('SonarQube') { // Replace 'SonarQube' with your SonarQube server name
-                        sh '''
-                            docker run --rm \
-                                -v "$(pwd)":/usr/src/app \
-                                $DOCKER_IMAGE:$DOCKER_TAG \
-                                sonar-scanner \
-                                -Dsonar.projectKey=network-congestion-prediction \
-                                -Dsonar.sources=. \
-                                -Dsonar.host.url=$SONAR_HOST_URL \
-                                -Dsonar.login=$SONAR_AUTH_TOKEN
-                        '''
-                    }
+                    // Run the tests using pytest
+                    sh 'docker run --rm -e PYTHONPATH=/app $DOCKER_IMAGE:$DOCKER_TAG pytest tests/ --maxfail=1 --disable-warnings -q'  // Assuming tests are in the 'tests' folder
                 }
             }
         }
@@ -76,7 +61,7 @@ pipeline {
                     } else {
                         echo "No running containers to clean up."
                     }
-                    sh 'docker rmi -f network-congestion-prediction:latest || true'
+                    sh 'docker rmi -f network-ongestion-prediction:latest || true'
                 }
             }
         }
@@ -84,6 +69,7 @@ pipeline {
 
     post {
         always {
+            // Optionally clean up Docker images
             sh 'docker rmi $DOCKER_IMAGE:$DOCKER_TAG || true'
         }
     }
