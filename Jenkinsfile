@@ -48,13 +48,13 @@ pipeline {
             steps {
                 script {
             // Create the test-results directory if it doesn't exist
-                    sh 'mkdir -p "$WORKSPACE/Network Congestion/test-results"'
+                    sh 'mkdir -p "$WORKSPACE/test-results"'
 
             // Run the tests inside the Docker container and mount the test results folder
                     sh '''
                 docker run --rm \
                 -e PYTHONPATH=/app \
-                -v "$WORKSPACE/Network Congestion/test-results:/test-results" \
+                -v "$WORKSPACE/test-results:/test-results" \
                 network-congestion-prediction:latest \
                 sh -c "mkdir -p /test-results && pytest tests/ --maxfail=1 --disable-warnings -q --junitxml=/test-results/test-results.xml"
             '''
