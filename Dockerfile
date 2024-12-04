@@ -2,6 +2,7 @@
 FROM python:3.9-slim
 
 # Install system dependencies for building Python packages and installing sonar-scanner
+# Install system dependencies for building Python packages
 RUN apt-get update && \
     apt-get install -y \
     build-essential \
@@ -9,8 +10,9 @@ RUN apt-get update && \
     libhdf5-dev \
     wget \
     unzip \
-    curl \
+    openjdk-11-jdk \
     && rm -rf /var/lib/apt/lists/*
+
 
 # Install OpenJDK 11
 RUN curl -sL https://packages.adoptopenjdk.net/installers/openjdk11/11.0.10.9.1/ubuntu/bionic/amd64/openjdk-11-jdk_11.0.10+9_amd64.deb -o openjdk-11-jdk.deb && \
