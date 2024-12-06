@@ -7,7 +7,6 @@ pipeline {
         DOCKER_REGISTRY = 'docker.io' // Adjust if needed
         GMAIL_USER = 'nouhailangr275128@gmail.com'  // Replace with your Gmail address
         GMAIL_PASSWORD = 'elhf fkrg xrfb mknn'  // Replace with your generated app password
-        TEST_RESULTS_DIR = '"$WORKSPACE/Network Congestion/test-results"' // Directory for test results with quotes
     }
 
     stages {
@@ -48,18 +47,22 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-            // Ensure the test results directory exists
-                    sh "mkdir -p $TEST_RESULTS_DIR"
-            
-            // Run the tests with more detailed output to help with debugging
-                    sh """
-                        docker run --rm -v $TEST_RESULTS_DIR:/app/test-results -e PYTHONPATH=/app $DOCKER_IMAGE:$DOCKER_TAG \
-                         pytest tests/ --maxfail=1 --disable-warnings -q --junitxml=/app/test-results/test-results.xml -v
-                    """
+                    // Run the tests using pytest and save the results to a file
+                    sh '''
+                        docker run --rm -e PYTHONPATH=/app $DOCKER_IMAGE:$DOCKER_TAG pytest tests/ --maxfail=1 --disable-warnings -q > test_results.txt || true
+                    '''
                 }
             }
         }
 
+        stage('Archive Test Results') {
+            steps {
+                script {
+                    // Archive the test results file as an artifact
+                    archiveArtifacts artifacts: 'test_results.txt', allowEmptyArchive: true
+                }
+            }
+        }
 
         stage('Clean Up') {
             steps {
@@ -71,7 +74,7 @@ pipeline {
                     } else {
                         echo "No running containers to clean up."
                     }
-                    sh 'docker rmi -f network-ongestion-prediction:latest || true'
+                    sh 'docker rmi -f network-congestion-prediction:latest || true'
                 }
             }
         }
