@@ -49,8 +49,9 @@ stage('Run Tests') {
                 -e PYTHONPATH=/app \
                 -v "$WORKSPACE/test-results:/app/test-results" \
                 "$DOCKER_IMAGE:$DOCKER_TAG" \
-                pytest tests/ --maxfail=1 --disable-warnings -q --junitxml=/app/test-results/test-results.xml
+                pytest tests/ --maxfail=1 --disable-warnings -q --junitxml=/app/test-results/test-results.xml > /app/test-results/console-output.log 2>&1
             '''
+            sh 'ls -l "$WORKSPACE/test-results"'
 
             // Display the contents of the generated test-results.xml
             sh 'echo "Contents of test-results.xml:"'
