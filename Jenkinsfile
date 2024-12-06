@@ -43,23 +43,33 @@ pipeline {
 stage('Run Tests') {
     steps {
         script {
-            // Ensure the test-results directory exists in Jenkins workspace
+            // Ensure the LOGS directory exists in Jenkins workspace
             sh 'mkdir -p "$WORKSPACE/LOGS"'
 
-            // Run the tests, ensuring the directory exists inside the container
+            // Debug: Verify the LOGS directory is correctly mounted
+            sh '''
+                docker run --rm --user root \
+                -v "$WORKSPACE/LOGS:/app/LOGS" \
+                "$DOCKER_IMAGE:$DOCKER_TAG" \
+                ls -l /app/LOGS
+            '''
+
+            // Run tests, saving both XML and console output to LOGS
             sh '''
                 docker run --rm --user root \
                 -e PYTHONPATH=/app \
-                -v "$WORKSPACE/test-results:/app/LOGS" \
+                -v "$WORKSPACE/LOGS:/app/LOGS" \
                 "$DOCKER_IMAGE:$DOCKER_TAG" \
-                sh -c "mkdir -p /app/LOGS && pytest tests/ --maxfail=1 --disable-warnings -q --junitxml=/app/test-results/test-results.xml > /app/LOGS/console-output.log 2>&1"
+                sh -c "mkdir -p /app/LOGS && pytest tests/ --maxfail=1 --disable-warnings -q --junitxml=/app/LOGS/test-results.xml > /app/LOGS/console-output.log 2>&1"
             '''
 
-            // Verify the generated files
+            // Verify the output
             sh 'ls -l "$WORKSPACE/LOGS"'
         }
     }
 }
+
+
 
 
 
