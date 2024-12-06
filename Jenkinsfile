@@ -7,7 +7,7 @@ pipeline {
         DOCKER_REGISTRY = 'docker.io' // Adjust if needed
         GMAIL_USER = 'nouhailangr275128@gmail.com'  // Replace with your Gmail address
         GMAIL_PASSWORD = 'elhf fkrg xrfb mknn'  // Replace with your generated app password
-        TEST_RESULTS_DIR = '/var/jenkins_home/workspace/Network Congestion/test-results' // Directory for test results
+        TEST_RESULTS_DIR = '/var/jenkins_home/workspace/network congestion/test-results' // Directory for test results
     }
 
     stages {
