@@ -33,21 +33,22 @@ pipeline {
             }
         }
 
-        stage('Code Quality Analysis') {
-            steps {
-                script {
-                    withSonarQubeEnv('SonarQube') { // 'SonarQube' is the name you gave the SonarQube server in Jenkins
-                        sh '''
-                            $SONAR_SCANNER_HOME/bin/sonar-scanner \
-                            -Dsonar.projectKey=network-congestion-prediction \
-                            -Dsonar.sources=. \
-                            -Dsonar.host.url=http://localhost:9000   // Adjust if using a remote server
-                            -Dsonar.login=SonarQube-Token
-                        '''
-                    }
-                }
+stage('Code Quality Analysis') {
+    steps {
+        script {
+            withSonarQubeEnv('SonarQube') { // 'SonarQube' is the name you gave the SonarQube server in Jenkins
+                sh '''
+                    $SONAR_SCANNER_HOME/bin/sonar-scanner \
+                    -Dsonar.projectKey=network-congestion-prediction \
+                    -Dsonar.sources=. \
+                    -Dsonar.host.url=http://localhost:9000  # Adjust if using a remote server
+                    -Dsonar.login=SonarQube-Token
+                '''
             }
         }
+    }
+}
+
 
         stage('Install Test Dependencies') {
             steps {
