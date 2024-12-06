@@ -7,6 +7,7 @@ pipeline {
         DOCKER_REGISTRY = 'docker.io' // Adjust if needed
         GMAIL_USER = 'nouhailangr275128@gmail.com'  // Replace with your Gmail address
         GMAIL_PASSWORD = 'elhf fkrg xrfb mknn'  // Replace with your generated app password
+        TEST_RESULTS_DIR = '/var/jenkins_home/workspace/Network Congestion/test-results' // Directory for test results
     }
 
     stages {
@@ -47,8 +48,11 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    // Run the tests using pytest
-                    sh 'docker run --rm -e PYTHONPATH=/app $DOCKER_IMAGE:$DOCKER_TAG pytest tests/ --maxfail=1 --disable-warnings -q'  // Assuming tests are in the 'tests' folder
+                    // Ensure the test results directory exists
+                    sh "mkdir -p $TEST_RESULTS_DIR"
+                    
+                    // Run the tests using pytest and save the output to an XML file
+                    sh "docker run --rm -v $TEST_RESULTS_DIR:/app/test-results -e PYTHONPATH=/app $DOCKER_IMAGE:$DOCKER_TAG pytest tests/ --maxfail=1 --disable-warnings -q --junitxml=/app/test-results/test-results.xml" 
                 }
             }
         }
