@@ -29,6 +29,8 @@ COPY . .
 # Install dependencies
 RUN pip install pytest flask 
 
+RUN apt-get update && apt-get install -y nodejs npm
+
 # Expose the port the app runs on
 EXPOSE 5001
 
