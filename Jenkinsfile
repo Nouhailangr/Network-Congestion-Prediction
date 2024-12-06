@@ -57,6 +57,7 @@ pipeline {
 
                     sh '''
                         echo "Contents of test-results.xml:"
+                        echo "<test>dummy</test>" > /test-results/test-results.xml
                         cat "$WORKSPACE/test-results/test-results.xml" || echo "test-results.xml is empty or missing!"
                     '''
 
