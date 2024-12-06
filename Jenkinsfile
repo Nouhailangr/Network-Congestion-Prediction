@@ -48,14 +48,18 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    // Ensure the test results directory exists
+            // Ensure the test results directory exists
                     sh "mkdir -p $TEST_RESULTS_DIR"
-                    
-                    // Run the tests using pytest and save the output to an XML file
-                    sh "docker run --rm -v $TEST_RESULTS_DIR:/app/test-results -e PYTHONPATH=/app $DOCKER_IMAGE:$DOCKER_TAG pytest tests/ --maxfail=1 --disable-warnings -q --junitxml=/app/test-results/test-results.xml" 
+            
+            // Run the tests with more detailed output to help with debugging
+                    sh """
+                        docker run --rm -v $TEST_RESULTS_DIR:/app/test-results -e PYTHONPATH=/app $DOCKER_IMAGE:$DOCKER_TAG \
+                         pytest tests/ --maxfail=1 --disable-warnings -q --junitxml=/app/test-results/test-results.xml -v
+                    """
                 }
             }
         }
+
 
         stage('Clean Up') {
             steps {
