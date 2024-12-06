@@ -40,32 +40,25 @@ pipeline {
             }
         }
 
-        stage('Run Tests') {
-            steps {
-                script {
-                    // Ensure the test-results directory exists in the Jenkins workspace
-                    // sh 'mkdir -p "$WORKSPACE/test-results"'
+stage('Run Tests') {
+    steps {
+        script {
+            // Ensure the test-results directory is correctly mapped
+            sh '''
+                docker run --rm --user root \
+                -e PYTHONPATH=/app \
+                -v "$WORKSPACE/test-results:/app/test-results" \
+                "$DOCKER_IMAGE:$DOCKER_TAG" \
+                pytest tests/ --maxfail=1 --disable-warnings -q --junitxml=/app/test-results/test-results.xml
+            '''
 
-                    // Run the tests and generate XML report
-                    sh '''
-                        docker run --rm --user root \
-                        -e PYTHONPATH=/app \
-                        -v "$WORKSPACE/test-results:/test-results" \
-                        "$DOCKER_IMAGE:$DOCKER_TAG" \
-                        pytest tests/ --maxfail=1 --disable-warnings -q --junitxml=/test-results/test-results.xml
-                    '''
-
-                    sh '''
-                        echo "Contents of test-results.xml:"
-                        echo "<test>dummy</test>" > /test-results/test-results.xml
-                        cat "$WORKSPACE/test-results/test-results.xml" || echo "test-results.xml is empty or missing!"
-                    '''
-
-                    // Verify that the test-results.xml file exists
-                    sh 'ls -l "$WORKSPACE/test-results"'
-                }
-            }
+            // Display the contents of the generated test-results.xml
+            sh 'echo "Contents of test-results.xml:"'
+            sh 'cat "$WORKSPACE/test-results/test-results.xml"'
         }
+    }
+}
+
 
         stage('Clean Up') {
             steps {
