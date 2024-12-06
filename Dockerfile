@@ -27,10 +27,7 @@ RUN pip install keras==3.4.1 tensorflow==2.17.0
 COPY . .
 
 # Install dependencies
-RUN pip install pytest flask
-
-# Create results directory
-RUN mkdir -p /test-results && chmod 777 /test-results
+RUN pip install pytest flask pytest-junitxml
 
 # Expose the port the app runs on
 EXPOSE 5001
