@@ -50,13 +50,13 @@ stage('Run Tests') {
             sh '''
                 docker run --rm --user root \
                 -e PYTHONPATH=/app \
-                -v "$WORKSPACE/test-results:/app/test-results" \
+                -v "$WORKSPACE/test-results:/app/LOGS" \
                 "$DOCKER_IMAGE:$DOCKER_TAG" \
-                sh -c "mkdir -p /app/test-results && pytest tests/ --maxfail=1 --disable-warnings -q --junitxml=/app/test-results/test-results.xml > /app/test-results/console-output.log 2>&1"
+                sh -c "mkdir -p /app/LOGS && pytest tests/ --maxfail=1 --disable-warnings -q --junitxml=/app/test-results/test-results.xml > /app/LOGS/console-output.log 2>&1"
             '''
 
             // Verify the generated files
-            sh 'ls -l "$WORKSPACE/test-results"'
+            sh 'ls -l "$WORKSPACE/LOGS"'
         }
     }
 }
