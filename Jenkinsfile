@@ -42,7 +42,7 @@ pipeline {
                             -Dsonar.projectKey=network-congestion-prediction \
                             -Dsonar.sources=. \
                             -Dsonar.host.url=http://localhost:9000 \  // Adjust if using a remote server
-                            -Dsonar.login=<your-sonar-token>
+                            -Dsonar.login=SonarQube-Token
                         '''
                     }
                 }
