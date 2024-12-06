@@ -55,6 +55,11 @@ pipeline {
                         pytest tests/ --maxfail=1 --disable-warnings -q --junitxml=/test-results/test-results.xml
                     '''
 
+                    sh '''
+                        echo "Contents of test-results.xml:"
+                        cat "$WORKSPACE/test-results/test-results.xml" || echo "test-results.xml is empty or missing!"
+                    '''
+
                     // Verify that the test-results.xml file exists
                     sh 'ls -l "$WORKSPACE/test-results"'
                 }
