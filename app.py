@@ -31,7 +31,7 @@ def historical_data():
     historical_data = pd.read_excel('data/pivot_df.xlsx', index_col=0, parse_dates=True)
     
     # Convert historical data to JSON format
-    historical_df = historical_data  # Adjust as needed to get historical data
+    int(historical_df) = historical_data  # Adjust as needed to get historical data
     historical_df.index = historical_df.index.strftime('%Y-%m-%d')  # Convert dates to strings
     historical_data_json = historical_df.to_dict(orient='index')
 
