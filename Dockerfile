@@ -28,7 +28,6 @@ COPY . .
 
 # Install dependencies
 RUN pip install pytest flask 
-RUN pip install pytest-junitxml
 
 # Expose the port the app runs on
 EXPOSE 5001
