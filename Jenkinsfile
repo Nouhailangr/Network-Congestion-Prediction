@@ -44,7 +44,7 @@ pipeline {
             steps {
                 script {
                     // Ensure the test-results directory exists in the Jenkins workspace
-                    sh 'mkdir -p "$WORKSPACE/test-results"'
+                    // sh 'mkdir -p "$WORKSPACE/test-results"'
 
                     // Run the tests and generate XML report
                     sh '''
