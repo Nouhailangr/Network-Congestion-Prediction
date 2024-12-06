@@ -4,23 +4,22 @@ pipeline {
     environment {
         DOCKER_IMAGE = 'network-congestion-prediction'
         DOCKER_TAG = 'latest'
-        DOCKER_REGISTRY = 'docker.io' // Adjust if needed
-        GMAIL_USER = 'nouhailangr275128@gmail.com'  // Replace with your Gmail address
-        GMAIL_PASSWORD = 'elhf fkrg xrfb mknn'  // Replace with your generated app password
+        DOCKER_REGISTRY = 'docker.io'
+        GMAIL_USER = 'nouhailangr275128@gmail.com'
+        GMAIL_PASSWORD = 'elhf fkrg xrfb mknn'
+        SONAR_SCANNER_HOME = tool name: 'SonarQube Scanner' // Use the tool name you configured in Jenkins
     }
 
     stages {
         stage('Clone Repository') {
             steps {
-                // Clone your Git repository containing the Flask app code
-                git branch: 'main', url: 'https://github.com/Nouhailangr/network-congestion-prediction' // Replace with your GitHub URL
+                git branch: 'main', url: 'https://github.com/Nouhailangr/network-congestion-prediction'
             }
         }
-        
+
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Build the Docker image
                     sh 'docker build -t $DOCKER_IMAGE:$DOCKER_TAG .'
                 }
             }
@@ -29,8 +28,23 @@ pipeline {
         stage('Run Docker Container') {
             steps {
                 script {
-                    // Run the Docker container
                     sh 'docker run -d -p 9090:5001 $DOCKER_IMAGE:$DOCKER_TAG'
+                }
+            }
+        }
+
+        stage('Code Quality Analysis') {
+            steps {
+                script {
+                    withSonarQubeEnv('SonarQube') { // 'SonarQube' is the name you gave the SonarQube server in Jenkins
+                        sh '''
+                            $SONAR_SCANNER_HOME/bin/sonar-scanner \
+                            -Dsonar.projectKey=network-congestion-prediction \
+                            -Dsonar.sources=. \
+                            -Dsonar.host.url=http://localhost:9000 \  // Adjust if using a remote server
+                            -Dsonar.login=<your-sonar-token>
+                        '''
+                    }
                 }
             }
         }
@@ -38,7 +52,6 @@ pipeline {
         stage('Install Test Dependencies') {
             steps {
                 script {
-                    // Install Python dependencies for testing
                     sh 'docker run --rm $DOCKER_IMAGE:$DOCKER_TAG pip install pytest flask'
                 }
             }
@@ -47,10 +60,7 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    // Run the tests using pytest and save the results to a file
-                    sh '''
-                        docker run --rm -e PYTHONPATH=/app $DOCKER_IMAGE:$DOCKER_TAG pytest tests/ --maxfail=1 --disable-warnings -q > test_results.txt || true
-                    '''
+                    sh 'docker run --rm -e PYTHONPATH=/app $DOCKER_IMAGE:$DOCKER_TAG pytest tests/ --maxfail=1 --disable-warnings -q > test_results.txt || true'
                 }
             }
         }
@@ -58,7 +68,6 @@ pipeline {
         stage('Archive Test Results') {
             steps {
                 script {
-                    // Archive the test results file as an artifact
                     archiveArtifacts artifacts: 'test_results.txt', allowEmptyArchive: true
                 }
             }
@@ -82,11 +91,10 @@ pipeline {
 
     post {
         always {
-            // Optionally clean up Docker images
             sh 'docker rmi $DOCKER_IMAGE:$DOCKER_TAG || true'
         }
         success {
-            mail to: 'nouhailangr275128@gmail.com',  // Replace with your recipient's email address
+            mail to: 'nouhailangr275128@gmail.com',
                 subject: "Jenkins Build Success - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: "The build for ${env.JOB_NAME} #${env.BUILD_NUMBER} was successful. Check the build logs for more details.\n\nBuild URL: ${env.BUILD_URL}",
                 from: "$GMAIL_USER",
@@ -94,7 +102,7 @@ pipeline {
         }
 
         failure {
-            mail to: 'nouhailangr275128@gmail.com',  // Replace with your recipient's email address
+            mail to: 'nouhailangr275128@gmail.com',
                 subject: "Jenkins Build Failed - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: "The build for ${env.JOB_NAME} #${env.BUILD_NUMBER} has failed. Please check the build logs for errors.\n\nBuild URL: ${env.BUILD_URL}",
                 from: "$GMAIL_USER",
