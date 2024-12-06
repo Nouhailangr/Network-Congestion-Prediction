@@ -41,7 +41,7 @@ stage('Code Quality Analysis') {
                     $SONAR_SCANNER_HOME/bin/sonar-scanner \
                     -Dsonar.projectKey=network-congestion-prediction \
                     -Dsonar.sources=. \
-                    -Dsonar.host.url=http://localhost:9000  # Adjust if using a remote server
+                    -Dsonar.host.url=http://host.docker.internal:9000  # Adjust if using a remote server
                     -Dsonar.login=SonarQube-Token
                 '''
             }
