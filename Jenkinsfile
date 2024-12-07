@@ -7,10 +7,20 @@ pipeline {
         DOCKER_REGISTRY = 'docker.io'
         GMAIL_USER = 'nouhailangr275128@gmail.com'
         GMAIL_PASSWORD = 'elhf fkrg xrfb mknn'
-        SONAR_SCANNER_HOME = tool name: 'SonarQube Scanner' // Use the tool name you configured in Jenkins
+        SONAR_SCANNER_HOME = tool (name: 'SonarQube Scanner') // Use the tool name you configured in Jenkins
     }
 
     stages {
+        stage('Setup Environment') {
+            steps {
+                // Install Node.js
+                sh '''
+                curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+                sudo apt-get install -y nodejs
+                '''
+            }
+        }
+        
         stage('Clone Repository') {
             steps {
                 git branch: 'main', url: 'https://github.com/Nouhailangr/network-congestion-prediction'
