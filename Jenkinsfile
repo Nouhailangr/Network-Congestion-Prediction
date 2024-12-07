@@ -2,6 +2,7 @@ pipeline {
     agent {
         docker {
             image 'node:16' // Node.js 16 pre-installed
+            args '--privileged -v /var/run/docker.sock:/var/run/docker.sock' // Allow access to Docker daemon
         }
     }
     environment {
@@ -13,7 +14,7 @@ pipeline {
     stages {
         stage('Verify Docker') {
             steps {
-            sh 'docker --version'
+                sh 'docker --version'
             }
         }
         stage('Clone Repository') {
@@ -33,7 +34,7 @@ pipeline {
         stage('Run Docker Container') {
             steps {
                 script {
-                    sh 'docker run -d -p 9090:5001 $DOCKER_IMAGE:$DOCKER_TAG'
+                    sh 'docker run -d -p 9090:5001 --name network-congestion-container $DOCKER_IMAGE:$DOCKER_TAG'
                 }
             }
         }
@@ -80,13 +81,8 @@ pipeline {
         stage('Clean Up') {
             steps {
                 script {
-                    def containerId = sh(script: "docker ps -q --filter name=$DOCKER_IMAGE", returnStdout: true).trim()
-                    if (containerId) {
-                        sh "docker stop ${containerId}"
-                        sh "docker rm ${containerId}"
-                    } else {
-                        echo "No running containers to clean up."
-                    }
+                    sh 'docker stop network-congestion-container || true'
+                    sh 'docker rm network-congestion-container || true'
                     sh 'docker rmi -f $DOCKER_IMAGE:$DOCKER_TAG || true'
                 }
             }
