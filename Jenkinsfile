@@ -4,6 +4,11 @@ pipeline {
             image 'node:16' // Node.js 16 pre-installed
         }
     }
+    stage('Verify Docker') {
+    steps {
+        sh 'docker --version'
+    }
+    }
 
     environment {
         DOCKER_IMAGE = 'network-congestion-prediction'
