@@ -1,36 +1,30 @@
-# Use the official Python image from the Docker Hub
+# Use an official Python image as a base
 FROM python:3.9-slim
 
-# Install system dependencies for building Python packages and Node.js
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    pkg-config \
-    libhdf5-dev \
+# Install necessary dependencies
+RUN apt-get update && apt-get install -y \
     curl \
+    unzip \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Node.js and npm
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
-    apt-get install -y nodejs && \
-    npm install -g npm@latest && \
-    rm -rf /var/lib/apt/lists/*
+# Install AWS CLI
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
+    && unzip awscliv2.zip \
+    && sudo ./aws/install \
+    && rm -rf awscliv2.zip
 
-# Set the working directory in the container
+# Install any additional dependencies for your application
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+# Set the working directory
 WORKDIR /app
 
-# Copy the requirements file into the container
-COPY requirements.txt .
-
-# Upgrade pip and install required Python packages
-RUN pip install --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt && \
-    pip install pandas openpyxl tensorflow keras==3.4.1 tensorflow==2.17.0 flask pytest pylint
-
-# Copy the rest of the application code into the container
+# Copy the application code
 COPY . .
 
-# Expose the port the app runs on
+# Expose the port for your app
 EXPOSE 5001
 
-# Define the command to run the application
-CMD ["flask", "run", "--host=0.0.0.0", "--port=5001"]
+# Command to run the app
+CMD ["python", "app.py"]
