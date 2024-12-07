@@ -2,11 +2,12 @@
 FROM python:3.9-slim
 
 # Install system dependencies for building Python packages
-RUN apt-get update && \
-    apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     pkg-config \
     libhdf5-dev \
+    nodejs \
+    npm \
     && rm -rf /var/lib/apt/lists/*
 
 # Set the working directory in the container
@@ -15,21 +16,13 @@ WORKDIR /app
 # Copy the requirements file into the container
 COPY requirements.txt .
 
-# Upgrade pip and install the required Python packages
-RUN pip install --upgrade pip
-RUN pip install --no-cache-dir -r requirements.txt
-RUN pip install pandas openpyxl tensorflow
-RUN pip install keras==3.4.1 tensorflow==2.17.0
-
-
+# Upgrade pip and install required Python packages
+RUN pip install --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt && \
+    pip install pandas openpyxl tensorflow keras==3.4.1 tensorflow==2.17.0 flask pytest
 
 # Copy the rest of the application code into the container
 COPY . .
-
-# Install dependencies
-RUN pip install pytest flask 
-
-RUN apt-get update && apt-get install -y nodejs npm
 
 # Expose the port the app runs on
 EXPOSE 5001
