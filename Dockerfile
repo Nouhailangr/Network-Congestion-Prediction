@@ -1,31 +1,33 @@
-# Use an official Python image as a base
+# Use the official Python image from the Docker Hub
 FROM python:3.9-slim
 
-# Install necessary dependencies
-RUN apt-get update && apt-get install -y \
-    curl \
-    unzip \
-    sudo \
+# Install system dependencies for building Python packages
+RUN apt-get update && \
+    apt-get install -y \
+    build-essential \
+    pkg-config \
+    libhdf5-dev \
     && rm -rf /var/lib/apt/lists/*
-    
-# Install AWS CLI
-RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
-    && unzip awscliv2.zip \
-    && sudo ./aws/install \
-    && rm -rf awscliv2.zip
 
-# Install any additional dependencies for your application
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-
-# Set the working directory
+# Set the working directory in the container
 WORKDIR /app
 
-# Copy the application code
+# Copy the requirements file into the container
+COPY requirements.txt .
+
+# Upgrade pip and install the required Python packages
+RUN pip install --upgrade pip
+RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install pandas openpyxl tensorflow
+RUN pip install keras==3.4.1 tensorflow==2.17.0
+
+
+
+# Copy the rest of the application code into the container
 COPY . .
 
-# Expose the port for your app
+# Expose the port the app runs on
 EXPOSE 5001
 
-# Command to run the app
-CMD ["python", "app.py"]
+# Define the command to run the application
+CMD ["flask", "run", "--host=0.0.0.0", "--port=5001"]
