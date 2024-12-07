@@ -1,14 +1,19 @@
 # Use the official Python image from the Docker Hub
 FROM python:3.9-slim
 
-# Install system dependencies for building Python packages
+# Install system dependencies for building Python packages and Node.js
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     pkg-config \
     libhdf5-dev \
-    nodejs \
-    npm \
+    curl \
     && rm -rf /var/lib/apt/lists/*
+
+# Install Node.js and npm
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
+    apt-get install -y nodejs && \
+    npm install -g npm@latest && \
+    rm -rf /var/lib/apt/lists/*
 
 # Set the working directory in the container
 WORKDIR /app
