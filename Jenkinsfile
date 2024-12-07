@@ -21,7 +21,7 @@ pipeline {
             steps {
                 script {
                     // Build the Docker image, which now includes AWS CLI
-                    sh 'docker build --platform linux/amd64 -t $DOCKER_IMAGE:$DOCKER_TAG .'
+                    sh 'docker build -t $DOCKER_IMAGE:$DOCKER_TAG .'
                 }
             }
         }
@@ -50,7 +50,7 @@ pipeline {
             steps {
                 script {
                     // Install Python dependencies for testing
-                    sh 'docker run --platform linux/amd64 --rm $DOCKER_IMAGE:$DOCKER_TAG pip install pytest flask'
+                    sh 'docker run --rm $DOCKER_IMAGE:$DOCKER_TAG pip install pytest flask'
                 }
             }
         }
