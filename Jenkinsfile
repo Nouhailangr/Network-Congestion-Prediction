@@ -13,15 +13,14 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                // Clone your Git repository containing the Flask app code
-                git branch: 'main', url: 'https://github.com/Nouhailangr/network-congestion-prediction' // Replace with your GitHub URL
+                git branch: 'main', url: 'https://github.com/Nouhailangr/network-congestion-prediction'
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Build the Docker image
+                    // Build the Docker image, which now includes AWS CLI
                     sh 'docker build -t $DOCKER_IMAGE:$DOCKER_TAG .'
                 }
             }
@@ -70,7 +69,6 @@ pipeline {
         stage('Archive Test Results') {
             steps {
                 script {
-                    // Archive the test results file as an artifact
                     archiveArtifacts artifacts: 'test_results.txt', allowEmptyArchive: true
                 }
             }
@@ -79,28 +77,26 @@ pipeline {
         stage('Archive Pylint Report') {
             steps {
                 script {
-                    // Archive the pylint report as an artifact
                     archiveArtifacts artifacts: 'pylint_report.txt', allowEmptyArchive: true
                 }
             }
         }
 
-        // Add stage to authenticate with AWS ECR
         stage('Authenticate with AWS ECR') {
             steps {
                 script {
-                    // Authenticate Docker with ECR using AWS CLI
+                    // Run the AWS CLI command inside the container to authenticate Docker with AWS ECR
                     sh '''
-                        aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin 515966501608.dkr.ecr.${AWS_REGION}.amazonaws.com
+                        docker run --rm $DOCKER_IMAGE:$DOCKER_TAG aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin 515966501608.dkr.ecr.${AWS_REGION}.amazonaws.com
                     '''
                 }
             }
         }
 
-        // Add stage to tag Docker image for ECR
         stage('Tag Docker Image for ECR') {
             steps {
                 script {
+                    // Tag Docker image for ECR
                     sh '''
                         docker tag $DOCKER_IMAGE:$DOCKER_TAG 515966501608.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPOSITORY:$DOCKER_TAG
                     '''
@@ -108,10 +104,10 @@ pipeline {
             }
         }
 
-        // Add stage to push Docker image to ECR
         stage('Push Docker Image to ECR') {
             steps {
                 script {
+                    // Push Docker image to ECR
                     sh '''
                         docker push 515966501608.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPOSITORY:$DOCKER_TAG
                     '''
@@ -137,23 +133,19 @@ pipeline {
 
     post {
         always {
-            // Optionally clean up Docker images
             sh 'docker rmi $DOCKER_IMAGE:$DOCKER_TAG || true'
         }
         success {
-            mail to: 'nouhailangr275128@gmail.com',  // Replace with your recipient's email address
-                subject: "Jenkins Build Success - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                body: "The build for ${env.JOB_NAME} #${env.BUILD_NUMBER} was successful. Check the build logs for more details.\n\nBuild URL: ${env.BUILD_URL}",
-                from: "$GMAIL_USER",
-                mimeType: 'text/plain'
+            mail to: 'nouhailangr275128@gmail.com', subject: "Jenkins Build Success - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+            body: "The build for ${env.JOB_NAME} #${env.BUILD_NUMBER} was successful. Check the build logs for more details.\n\nBuild URL: ${env.BUILD_URL}",
+            from: "$GMAIL_USER",
+            mimeType: 'text/plain'
         }
-
         failure {
-            mail to: 'nouhailangr275128@gmail.com',  // Replace with your recipient's email address
-                subject: "Jenkins Build Failed - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                body: "The build for ${env.JOB_NAME} #${env.BUILD_NUMBER} has failed. Please check the build logs for errors.\n\nBuild URL: ${env.BUILD_URL}",
-                from: "$GMAIL_USER",
-                mimeType: 'text/plain'
+            mail to: 'nouhailangr275128@gmail.com', subject: "Jenkins Build Failed - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+            body: "The build for ${env.JOB_NAME} #${env.BUILD_NUMBER} has failed. Please check the build logs for errors.\n\nBuild URL: ${env.BUILD_URL}",
+            from: "$GMAIL_USER",
+            mimeType: 'text/plain'
         }
     }
 }
