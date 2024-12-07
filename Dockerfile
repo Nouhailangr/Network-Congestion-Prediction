@@ -1,5 +1,5 @@
 # Use an official Python image as a base
-FROM python:3.9-slim
+FROM --platform=linux/amd64 python:3.9-slim
 
 # Install necessary dependencies
 RUN apt-get update && apt-get install -y \
