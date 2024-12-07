@@ -24,7 +24,7 @@ COPY requirements.txt .
 # Upgrade pip and install required Python packages
 RUN pip install --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt && \
-    pip install pandas openpyxl tensorflow keras==3.4.1 tensorflow==2.17.0 flask pytest
+    pip install pandas openpyxl tensorflow keras==3.4.1 tensorflow==2.17.0 flask pytest pylint
 
 # Copy the rest of the application code into the container
 COPY . .
