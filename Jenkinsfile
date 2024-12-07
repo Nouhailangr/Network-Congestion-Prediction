@@ -15,7 +15,7 @@ pipeline {
             steps {
                 // Install Node.js
                 sh '''
-                curl -fsSL https://deb.nodesource.com/setup_16.x | -E bash -
+                curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
                 apt-get install -y nodejs
                 '''
             }
