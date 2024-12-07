@@ -76,6 +76,15 @@ pipeline {
             }
         }
 
+        stage('Archive Pylint Report') {
+            steps {
+                script {
+                    // Archive the pylint report as an artifact
+                    archiveArtifacts artifacts: 'pylint_report.txt', allowEmptyArchive: true
+                }
+            }
+        }
+
         stage('Clean Up') {
             steps {
                 script {
