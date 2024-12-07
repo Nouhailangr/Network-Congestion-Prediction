@@ -16,12 +16,24 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/Nouhailangr/network-congestion-prediction' // Replace with your GitHub URL
             }
         }
-        
+
         stage('Build Docker Image') {
             steps {
                 script {
                     // Build the Docker image
                     sh 'docker build -t $DOCKER_IMAGE:$DOCKER_TAG .'
+                }
+            }
+        }
+
+        // Add Pylint stage to check code quality
+        stage('Run Pylint') {
+            steps {
+                script {
+                    // Run pylint inside the container to check code quality
+                    sh '''
+                        docker run --rm $DOCKER_IMAGE:$DOCKER_TAG pylint /app --output-format=text > pylint_report.txt || true
+                    '''
                 }
             }
         }
