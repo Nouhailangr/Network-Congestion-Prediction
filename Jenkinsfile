@@ -4,7 +4,8 @@ pipeline {
     environment {
         DOCKER_IMAGE = 'network-congestion-prediction'
         DOCKER_TAG = 'latest'
-        DOCKER_REGISTRY = 'docker.io' // Adjust if needed
+        AWS_REGION = 'us-east-1'  // Replace with your AWS region
+        ECR_REPOSITORY = 'network-congestion-prediction'  // Replace with your ECR repository name
         GMAIL_USER = 'nouhailangr275128@gmail.com'  // Replace with your Gmail address
         GMAIL_PASSWORD = 'elhf fkrg xrfb mknn'  // Replace with your generated app password
     }
@@ -26,7 +27,6 @@ pipeline {
             }
         }
 
-        // Add Pylint stage to check code quality
         stage('Run Pylint') {
             steps {
                 script {
@@ -81,6 +81,40 @@ pipeline {
                 script {
                     // Archive the pylint report as an artifact
                     archiveArtifacts artifacts: 'pylint_report.txt', allowEmptyArchive: true
+                }
+            }
+        }
+
+        // Add stage to authenticate with AWS ECR
+        stage('Authenticate with AWS ECR') {
+            steps {
+                script {
+                    // Authenticate Docker with ECR
+                    sh '''
+                        aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin 515966501608.dkr.ecr.${AWS_REGION}.amazonaws.com
+                    '''
+                }
+            }
+        }
+
+        // Add stage to tag Docker image for ECR
+        stage('Tag Docker Image for ECR') {
+            steps {
+                script {
+                    sh '''
+                        docker tag $DOCKER_IMAGE:$DOCKER_TAG 515966501608.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPOSITORY:$DOCKER_TAG
+                    '''
+                }
+            }
+        }
+
+        // Add stage to push Docker image to ECR
+        stage('Push Docker Image to ECR') {
+            steps {
+                script {
+                    sh '''
+                        docker push 515966501608.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPOSITORY:$DOCKER_TAG
+                    '''
                 }
             }
         }
