@@ -89,7 +89,7 @@ pipeline {
         stage('Authenticate with AWS ECR') {
             steps {
                 script {
-                    // Authenticate Docker with ECR
+                    // Authenticate Docker with ECR using AWS CLI
                     sh '''
                         aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin 515966501608.dkr.ecr.${AWS_REGION}.amazonaws.com
                     '''
