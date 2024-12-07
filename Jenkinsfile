@@ -4,12 +4,6 @@ pipeline {
             image 'node:16' // Node.js 16 pre-installed
         }
     }
-    stage('Verify Docker') {
-    steps {
-        sh 'docker --version'
-    }
-    }
-
     environment {
         DOCKER_IMAGE = 'network-congestion-prediction'
         DOCKER_TAG = 'latest'
@@ -17,6 +11,11 @@ pipeline {
     }
 
     stages {
+        stage('Verify Docker') {
+            steps {
+            sh 'docker --version'
+            }
+        }
         stage('Clone Repository') {
             steps {
                 git branch: 'main', url: 'https://github.com/Nouhailangr/network-congestion-prediction'
