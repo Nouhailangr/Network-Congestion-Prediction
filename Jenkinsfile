@@ -9,6 +9,9 @@ pipeline {
         AWS_REGION = 'eu-north-1' // AWS region
         GMAIL_USER = 'nouhailangr275128@gmail.com'  // Replace with your Gmail address
         GMAIL_PASSWORD = 'elhf fkrg xrfb mknn'  // Replace with your generated app password
+        AWS_ACCESS_KEY_ID = 'AKIAXQIQAALUEHVEZHPM'  // Replace with your actual AWS access key
+        AWS_SECRET_ACCESS_KEY = 'LcahC1r2GVS2lWrLllXjtma3eU1kXfBO1PHIn5uU'  // Replace with your actual AWS secret access key
+        AWS_DEFAULT_REGION = 'eu-north-1'  // Set the AWS region to match your ECR region
     }
 
     stages {
@@ -22,7 +25,7 @@ pipeline {
             steps {
                 script {
                     sh '''
-                    aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin 515966501608.dkr.ecr.eu-north-1.amazonaws.com
+                        aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $DOCKER_REGISTRY
                     '''
                 }
             }
