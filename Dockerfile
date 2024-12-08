@@ -23,6 +23,7 @@ RUN pip install pandas openpyxl tensorflow
 RUN pip install keras==3.4.1 tensorflow==2.17.0
 
 
+RUN pip install pylint
 
 # Copy the rest of the application code into the container
 COPY . .
