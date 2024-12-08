@@ -26,35 +26,6 @@ pipeline {
             }
         }
 
-        stage('Authenticate AWS ECR') {
-            steps {
-                script {
-                    // Authenticate Docker to AWS ECR
-                    sh '''
-                        aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $DOCKER_REGISTRY
-                    '''
-                }
-            }
-        }
-
-        stage('Tag Docker Image') {
-            steps {
-                script {
-                    // Tag the Docker image with the ECR repository URL
-                    sh 'docker tag $DOCKER_IMAGE:$DOCKER_TAG $DOCKER_REGISTRY/$ECR_REPO:$DOCKER_TAG'
-                }
-            }
-        }
-
-        stage('Push Docker Image to AWS ECR') {
-            steps {
-                script {
-                    // Push the Docker image to ECR
-                    sh 'docker push $DOCKER_REGISTRY/$ECR_REPO:$DOCKER_TAG'
-                }
-            }
-        }
-
         stage('Run Pylint') {
             steps {
                 script {
@@ -100,6 +71,35 @@ pipeline {
         stage('Archive Pylint Report') {
             steps {
                 archiveArtifacts artifacts: 'pylint_report.txt', allowEmptyArchive: true
+            }
+        }
+
+                stage('Authenticate AWS ECR') {
+            steps {
+                script {
+                    // Authenticate Docker to AWS ECR
+                    sh '''
+                        aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $DOCKER_REGISTRY
+                    '''
+                }
+            }
+        }
+
+        stage('Tag Docker Image') {
+            steps {
+                script {
+                    // Tag the Docker image with the ECR repository URL
+                    sh 'docker tag $DOCKER_IMAGE:$DOCKER_TAG $DOCKER_REGISTRY/$ECR_REPO:$DOCKER_TAG'
+                }
+            }
+        }
+
+        stage('Push Docker Image to AWS ECR') {
+            steps {
+                script {
+                    // Push the Docker image to ECR
+                    sh 'docker push $DOCKER_REGISTRY/$ECR_REPO:$DOCKER_TAG'
+                }
             }
         }
 
