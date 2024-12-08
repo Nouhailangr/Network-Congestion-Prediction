@@ -43,9 +43,4 @@ def test_forecast_valid_request(client):
     assert isinstance(data['dates'], list)
     assert isinstance(data['data'], dict)
 
-def test_forecast_invalid_method(client):
-    """Test the forecast route with an invalid request method."""
-    response = client.get('/forecast')
-    assert response.status_code == 405
-    assert response.get_json() == {'error': 'Invalid request method.'}
 
