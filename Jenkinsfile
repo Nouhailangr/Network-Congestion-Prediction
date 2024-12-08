@@ -87,7 +87,7 @@ pipeline {
             }
         }
 
-                stage('Authenticate AWS ECR') {
+        stage('Authenticate AWS ECR') {
             steps {
                 script {
                     // Authenticate Docker to AWS ECR
@@ -112,6 +112,7 @@ pipeline {
                 sh 'docker push 515966501608.dkr.ecr.eu-north-1.amazonaws.com/network-congestion-prediction:latest'
             }
         }
+    }
 
     post {
         always {
@@ -133,5 +134,4 @@ pipeline {
                 mimeType: 'text/plain'
         }
     }
-}
 }
