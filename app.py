@@ -9,7 +9,6 @@ import os
 from io import BytesIO
 import matplotlib.pyplot as plt
 
-
 app = Flask(__name__)
 app.config['TESTING'] = True  # This enables the testing configuration
 
