@@ -113,22 +113,6 @@ pipeline {
             }
         }
 
-        stage('Clean Up') {
-            steps {
-                script {
-                    def containerId = sh(script: "docker ps -q --filter name=network-congestion-prediction", returnStdout: true).trim()
-                    if (containerId) {
-                        sh "docker stop ${containerId}"
-                        sh "docker rm ${containerId}"
-                    } else {
-                        echo "No running containers to clean up."
-                    }
-                    sh 'docker rmi -f network-congestion-prediction:latest || true'
-                }
-            }
-        }
-    }
-
     post {
         always {
             sh 'docker rmi $DOCKER_IMAGE:$DOCKER_TAG || true'
