@@ -1,13 +1,11 @@
+import os
+from io import BytesIO
 from flask import Flask, render_template, jsonify, request, send_from_directory
 import numpy as np
 import pandas as pd
-import tensorflow as tf
+import tensorflow.keras.backend as K
 from tensorflow.keras.models import load_model
 from tensorflow.keras.utils import get_custom_objects
-import tensorflow.keras.backend as K
-import os
-from io import BytesIO
-import matplotlib.pyplot as plt
 
 app = Flask(__name__)
 app.config['TESTING'] = True  # This enables the testing configuration
@@ -26,11 +24,9 @@ def home():
 @app.route('/historical_data', methods=['GET'])
 def historical_data():
     """Fetch and return historical data in JSON format."""
-    historical_data = pd.read_excel('data/pivot_df.xlsx', index_col=0, parse_dates=True)
-    historical_df = historical_data
+    historical_df = pd.read_excel('data/pivot_df.xlsx', index_col=0, parse_dates=True)
     historical_df.index = historical_df.index.strftime('%Y-%m-%d')  # Convert dates to strings
     historical_data_json = historical_df.to_dict(orient='index')
-
     return jsonify({'dates': list(historical_df.index), 'data': historical_data_json})
 
 
@@ -78,39 +74,37 @@ def forecast_lstm_multiple_steps(model, data_pivot, feature_columns, target_colu
     return forecast_df
 
 
-@app.route('/forecast', methods=['GET', 'POST'])
+@app.route('/forecast', methods=['POST'])
 def forecast():
     """Generate a forecast for a given city and period."""
-    if request.method == 'POST':
-        city = request.form.get('city')
-        period = int(request.form.get('period'))  # Ensure period is an integer
-        if city and period:
-            forecast_steps = period
-            window_size = 20
-            feature_columns = [col for col in supervised_data.columns if col not in [
-                'cong_ratio_CASABLANCA(t)', 'cong_ratio_FES(t)',
-                'cong_ratio_MARRAKECH(t)', 'cong_ratio_MEKNES(t)',
-                'cong_ratio_OUJDA ANGAD(t)', 'cong_ratio_RABAT(t)', 'cong_ratio_TANGER ASSILAH(t)'
-            ]]
-            target_columns = [
-                'cong_ratio_CASABLANCA(t)', 'cong_ratio_FES(t)',
-                'cong_ratio_MARRAKECH(t)', 'cong_ratio_MEKNES(t)',
-                'cong_ratio_OUJDA ANGAD(t)', 'cong_ratio_RABAT(t)', 'cong_ratio_TANGER ASSILAH(t)'
-            ]
+    city = request.form.get('city')
+    period = int(request.form.get('period'))  # Ensure period is an integer
+    if city and period:
+        forecast_steps = period
+        window_size = 20
+        feature_columns = [col for col in supervised_data.columns if col not in [
+            'cong_ratio_CASABLANCA(t)', 'cong_ratio_FES(t)',
+            'cong_ratio_MARRAKECH(t)', 'cong_ratio_MEKNES(t)',
+            'cong_ratio_OUJDA ANGAD(t)', 'cong_ratio_RABAT(t)', 'cong_ratio_TANGER ASSILAH(t)'
+        ]]
+        target_columns = [
+            'cong_ratio_CASABLANCA(t)', 'cong_ratio_FES(t)',
+            'cong_ratio_MARRAKECH(t)', 'cong_ratio_MEKNES(t)',
+            'cong_ratio_OUJDA ANGAD(t)', 'cong_ratio_RABAT(t)', 'cong_ratio_TANGER ASSILAH(t)'
+        ]
 
-            forecast_df = forecast_lstm_multiple_steps(model, supervised_data, feature_columns, target_columns, window_size, forecast_steps)
+        forecast_df = forecast_lstm_multiple_steps(model, supervised_data, feature_columns, target_columns, window_size, forecast_steps)
 
-            if f'cong_ratio_{city.upper()}(t)' in forecast_df.columns:
-                city_data = forecast_df[[f'cong_ratio_{city.upper()}(t)']]
-                city_data.index = city_data.index.strftime('%Y-%m-%d')  # Convert dates to strings
-                forecast_data = city_data.to_dict(orient='index')
+        if f'cong_ratio_{city.upper()}(t)' in forecast_df.columns:
+            city_data = forecast_df[[f'cong_ratio_{city.upper()}(t)']]
+            city_data.index = city_data.index.strftime('%Y-%m-%d')  # Convert dates to strings
+            forecast_data = city_data.to_dict(orient='index')
 
-                return jsonify({'dates': list(city_data.index), 'data': forecast_data})
-            else:
-                return jsonify({'error': 'City not found in forecast data.'}), 404
+            return jsonify({'dates': list(city_data.index), 'data': forecast_data})
         else:
-            return jsonify({'error': 'City and period are required.'}), 400
-    return jsonify({'error': 'Invalid request method.'}), 405
+            return jsonify({'error': 'City not found in forecast data.'}), 404
+    else:
+        return jsonify({'error': 'City and period are required.'}), 400
 
 
 @app.route('/favicon.ico')
