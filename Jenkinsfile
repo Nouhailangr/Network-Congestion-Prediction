@@ -18,6 +18,16 @@ pipeline {
             }
         }
 
+        stage('Docker Login') {
+            steps {
+                script {
+                    sh '''
+                    aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin 515966501608.dkr.ecr.eu-north-1.amazonaws.com
+                    '''
+                }
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
                 script {
@@ -96,10 +106,7 @@ pipeline {
 
         stage('Push Docker Image to AWS ECR') {
             steps {
-                script {
-                    // Push the Docker image to ECR
-                    sh 'docker push $DOCKER_REGISTRY/$ECR_REPO:$DOCKER_TAG'
-                }
+                sh 'docker push 515966501608.dkr.ecr.eu-north-1.amazonaws.com/network-congestion-prediction:latest'
             }
         }
 
