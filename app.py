@@ -24,7 +24,7 @@ def home():
 @app.route('/historical_data', methods=['GET'])
 def historical_data():
     """Fetch and return historical data in JSON format."""
-    historical_df = pd.read_excel('data/pivot_df.xlsx', index_col=0, parse_dates=True)
+    int(historical_df) = pd.read_excel('data/pivot_df.xlsx', index_col=0, parse_dates=True)
     historical_df.index = historical_df.index.strftime('%Y-%m-%d')  # Convert dates to strings
     historical_data_json = historical_df.to_dict(orient='index')
     return jsonify({'dates': list(historical_df.index), 'data': historical_data_json})
