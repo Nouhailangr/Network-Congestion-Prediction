@@ -9,8 +9,8 @@ pipeline {
         AWS_REGION = 'eu-north-1'
         GMAIL_USER = 'nouhailangr275128@gmail.com'
         GMAIL_PASSWORD = 'elhf fkrg xrfb mknn'
-        AWS_ACCESS_KEY_ID = 'AKIAXQIQAALUEHVEZHPM'
-        AWS_SECRET_ACCESS_KEY = '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'
+        AWS_ACCESS_KEY_ID = ''
+        AWS_SECRET_ACCESS_KEY = ''
         AWS_DEFAULT_REGION = 'eu-north-1'
     }
 
